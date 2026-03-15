@@ -19,21 +19,10 @@ resource "aws_lb_listener" "external-alb-listener" {
 
 
 resource "aws_alb_target_group" "project1-tg" {
-  name        = "project1-tg"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.project1-VPC.id
-  target_type = "instance"
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
-    interval            = 30
-    path                = "/" //the path at which application or server is running 
-    protocol            = "http"
-    matcher             = "200"
-  }
+  name     = "project1-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.project1-VPC.id
 }
 
 
