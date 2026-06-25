@@ -1,6 +1,6 @@
 
 ##Traget Group for the ALB############################################
-resource "aws_target_group" "poneglyph1-tg" {
+resource "aws_lb_target_group" "poneglyph1-tg" {
   name     = "poneglyph1-tg"
   port     = 80
   protocol = "HTTP"
@@ -15,7 +15,7 @@ resource "aws_target_group" "poneglyph1-tg" {
     unhealthy_threshold = 2
     timeout             = 5 ##in seconds, amount of time to wait for a response from the target before considering the health check failed
     interval            = 30
-    success_codes       = "200"
+    //success_codes       = "200"
   }
 
   tags = {
@@ -29,7 +29,7 @@ resource "aws_lb" "poneglyph1-alb" {
   internal        = false
   security_groups = [aws_security_group.alb-sg.id]
   subnets = [
-  aws_subnet.poneglyph1-subnet1.id, aws_subnet.poneglyph1-subnet2.id]
+  aws_subnet.public-subnet1.id, aws_subnet.public-subnet2.id]
   load_balancer_type = "application"
 
   tags = {
@@ -46,7 +46,7 @@ resource "aws_lb_listener" "poneglyph1-alb-listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_target_group.poneglyph1-tg.arn
+    target_group_arn = aws_lb_target_group.poneglyph1-tg.arn
 
   }
 }
