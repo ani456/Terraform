@@ -2,7 +2,7 @@
 ##Traget Group for the ALB############################################
 resource "aws_lb_target_group" "poneglyph1-tg" {
   name     = "poneglyph1-tg"
-  port     = 80
+  port     = 5000
   protocol = "HTTP"
   vpc_id   = aws_vpc.poneglyph1-vpc.id
 

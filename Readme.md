@@ -36,3 +36,7 @@ stage = "t2.medium"
 }
 instance_type = lookup(var.instance, terraform.workspace, "t2.micro")
 #############################################################################
+
+File Purpose Syntax
+variables.tf Declare variables variable "name" { ... }
+terraform.tfvars Set variable valuesname = "value"
