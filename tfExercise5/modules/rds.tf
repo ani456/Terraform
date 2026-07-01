@@ -1,6 +1,5 @@
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name   = "poneglyph1-rds-subnet-group"
-  vpc_id = var.vpc_id
+  name = "poneglyph1-rds-subnet-group"
   subnet_ids = [
     aws_subnet.private-subnet-rds1.id,
     aws_subnet.private-subnet-rds2.id
@@ -8,8 +7,9 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 
 }
 
-
-resource "aws_rds_cluster" "poneglyph1-rds" {
+###aws_db_instance for plain mysql database for aurora use aws_rds_cluster resource instead
+### there are many attributes different for aurora and mysql, for example engine_version, instance_class, storage_type, etc.
+resource "aws_db_instance" "poneglyph1-rds" {
   count = var.create_rds ? 1 : 0
 
   ##Engine and version
@@ -22,16 +22,20 @@ resource "aws_rds_cluster" "poneglyph1-rds" {
   storage_type            = "gp2"
   backup_retention_period = 7
   skip_final_snapshot     = true
+  multi_az                = false
 
 
   ##Credentials
-  database_name   = "poneglyph1db"
-  master_username = var.db_username
-  master_password = var.db_password
+  db_name  = "poneglyph1db"
+  username = var.db_username
+  password = var.db_password
 
   ##Network configuration
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
+  publicly_accessible    = false
+  port                   = 3306
+
 
 
 }
