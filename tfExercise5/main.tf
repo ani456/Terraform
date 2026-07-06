@@ -4,6 +4,5 @@ module "dev-vpc" {
 }
 
 module "rds" {
-  source = "./modules/rds"
-  vpc_id = module.dev-vpc.vpc_id
+  source = "./modules"
 }

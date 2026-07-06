@@ -40,3 +40,19 @@ instance_type = lookup(var.instance, terraform.workspace, "t2.micro")
 File Purpose Syntax
 variables.tf Declare variables variable "name" { ... }
 terraform.tfvars Set variable valuesname = "value"
+
+####### Referencing values from another module ✅ Output required ###########
+
+If you just added a new module block (like your rds case), terraform init will only add/update entries for any new providers that module requires. Existing provider entries stay untouched.
+
+####### Getting the same endpoint for every rds instance ############
+
+An RDS endpoint looks like:
+<db-instance-identifier>.<random-suffix>.<region>.rds.amazonaws.com
+
+The <random-suffix> part (e.g. abcdefghijkl) is a unique identifier generated internally by RDS for a specific combination of AWS Region and AWS account, and it doesn't change for that Region/account combination — meaning all your DB instances in that Region share the same fixed identifier.
+
+- Your app configs / connection strings don't need to change between recreations.
+- It only changes if you change the DB instance identifier or deploy to a different region.
+
+#########
