@@ -1,0 +1,24 @@
+# State files (works recursively)
+*.tfstate
+*.tfstate.backup
+
+# Terraform directory (** makes it recursive)
+**/.terraform/
+**/.terraform.lock.hcl
+
+# Variable files with secrets (works recursively)
+*.tfvars
+*.auto.tfvars
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+/////
+*.out

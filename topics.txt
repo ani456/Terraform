@@ -1,0 +1,255 @@
+
+
+Phase 1: Core Terraform Fundamentals
+1. Infrastructure as Code (IaC)
+•	What IaC is 
+•	Benefits of IaC 
+•	Declarative vs Imperative approaches 
+2. Terraform Basics
+•	Terraform architecture 
+•	Providers 
+•	Resources 
+•	Data sources 
+•	State file 
+•	Execution lifecycle 
+3. Terraform Commands
+•	terraform init 
+•	terraform validate 
+•	terraform fmt 
+•	terraform plan 
+•	terraform apply 
+•	terraform destroy 
+•	terraform output 
+________________________________________
+Phase 2: HCL (HashiCorp Configuration Language)
+4. Variables
+•	Input variables 
+•	Variable types 
+•	Default values 
+•	Variable validation 
+5. Outputs
+output "instance_ip" {
+  value = aws_instance.web.public_ip
+}
+6. Locals
+locals {
+  environment = "dev"
+}
+7. Expressions
+•	Conditionals 
+•	String interpolation 
+•	Arithmetic expressions 
+8. Functions
+Important functions:
+•	lookup() 
+•	merge() 
+•	join() 
+•	split() 
+•	length() 
+•	contains() 
+•	cidrsubnet() 
+•	element() 
+•	coalesce() 
+________________________________________
+Phase 3: Resources and Data Sources
+9. Resources
+Creates infrastructure.
+resource "aws_instance" "web" {}
+10. Data Sources
+Reads existing infrastructure.
+data "aws_ami" "ubuntu" {}
+Know the difference thoroughly.
+________________________________________
+Phase 4: State Management
+One of the most important Terraform topics.
+11. Terraform State
+•	What is state? 
+•	Why state is required 
+•	State file structure 
+12. State Commands
+terraform state list
+terraform state show
+terraform state mv
+terraform state rm
+13. State Locking
+•	Why locking is needed 
+•	Concurrent modifications 
+14. Drift Detection
+•	Infrastructure drift 
+•	Refresh behavior 
+________________________________________
+Phase 5: Meta-Arguments
+15. count
+count = 3
+16. for_each
+for_each = toset(["dev", "prod"])
+17. depends_on
+depends_on = [aws_vpc.main]
+18. lifecycle
+lifecycle {
+  create_before_destroy = true
+}
+Learn:
+•	prevent_destroy 
+•	ignore_changes 
+•	replace_triggered_by 
+________________________________________
+Phase 6: Providers
+19. Provider Configuration
+provider "aws" {
+  region = "us-east-1"
+}
+20. Provider Aliases
+Multi-region deployments:
+provider "aws" {
+  alias  = "west"
+  region = "us-west-2"
+}
+________________________________________
+Phase 7: Modules
+This is where Terraform becomes production-ready.
+21. Creating Modules
+Structure:
+modules/
+ └── vpc/
+ └── ec2/
+22. Module Inputs
+23. Module Outputs
+24. Module Versioning
+25. Public Module Registry
+Explore modules from:
+Terraform Registry
+________________________________________
+Phase 8: Remote State and Backends
+26. Backends
+Understand:
+•	Local backend 
+•	Remote backend 
+27. S3 Backend
+backend "s3" {}
+28. State Locking with DynamoDB
+29. Backend Migration
+________________________________________
+Phase 9: Workspaces
+30. Workspaces
+terraform workspace new dev
+Understand:
+•	Workspace usage 
+•	Workspace limitations 
+•	Alternatives 
+________________________________________
+Phase 10: Advanced Language Features
+31. Dynamic Blocks
+dynamic "ingress" {}
+32. for Expressions
+[for s in var.servers : s.name]
+33. Nested Objects
+34. Complex Variable Types
+map(object({}))
+________________________________________
+Phase 11: Importing Existing Resources
+35. Import
+terraform import
+36. Import Blocks (Terraform 1.5+)
+________________________________________
+Phase 12: Provisioners
+Know them, but understand why they are discouraged.
+37. local-exec
+38. remote-exec
+39. null_resource / terraform_data
+________________________________________
+Phase 13: Testing and Validation
+40. Formatting
+terraform fmt
+41. Validation
+terraform validate
+42. Preconditions
+43. Postconditions
+44. Variable Validation
+________________________________________
+Phase 14: Security
+45. Sensitive Variables
+sensitive = true
+46. Secret Management
+Avoid:
+•	Hardcoded credentials 
+•	Plain-text secrets 
+Use:
+•	IAM roles 
+•	OIDC 
+•	Secret managers 
+47. Least Privilege IAM
+________________________________________
+Phase 15: CI/CD Integration
+48. Terraform in Pipelines
+Common tools:
+•	GitHub Actions 
+•	GitLab CI/CD 
+•	Jenkins 
+Typical flow:
+fmt
+↓
+validate
+↓
+plan
+↓
+approval
+↓
+apply
+________________________________________
+Phase 16: HCP Terraform
+49. Workspaces
+50. Remote Execution
+51. Variable Management
+52. VCS Integration
+53. Run History
+54. Policy Enforcement
+Using Sentinel.
+________________________________________
+Phase 17: Production Topics
+55. Multi-Environment Design
+•	Dev 
+•	Stage 
+•	Prod 
+56. Multi-Account Strategy
+57. Multi-Region Deployments
+58. Reusable Infrastructure Patterns
+59. Terraform Project Structure
+60. Team Collaboration
+________________________________________
+Phase 18: Real Projects (Must Do)
+Build these end-to-end:
+Beginner
+•	VPC 
+•	EC2 
+•	Security Groups 
+•	S3 Bucket 
+Intermediate
+•	ALB 
+•	Auto Scaling 
+•	RDS 
+•	Route53 
+Advanced
+•	EKS Cluster 
+•	Multi-region deployment 
+•	Multi-account deployment 
+•	Complete production environment 
+________________________________________
+Interview-Focused Topics (Highest Priority)
+If you're preparing for interviews, be able to explain:
+1.	State file 
+2.	Backend vs Provider 
+3.	Resource vs Data Source 
+4.	count vs for_each 
+5.	terraform.tfvars vs variables.tf 
+6.	Modules 
+7.	Workspaces 
+8.	State locking 
+9.	Remote state 
+10.	Drift detection 
+11.	depends_on 
+12.	Lifecycle rules 
+13.	Importing resources 
+14.	Multi-region deployment 
+15.	HCP Terraform
+
