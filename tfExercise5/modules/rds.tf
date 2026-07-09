@@ -49,4 +49,21 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
 
 }
 
+##parameter group is optional if you want to customize the database parameters,
+## you can create a parameter group and associate it with the RDS instance.
+
+# resource "aws_db_parameter_group" "poneglyph1-rds-parameter-group" {
+#   name   = "poneglyph1-rds-parameter-group"
+#   family = "mysql8.0"
+
+#   parameter {
+#     name  = "max_connections"
+#     value = "200"
+#   }
+
+#   parameter {
+#     name  = "character_set_server"
+#     value = "utf8mb4"
+#   }
+# }
 
