@@ -10,7 +10,12 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 
 ###aws_db_instance for plain mysql database for aurora use aws_rds_cluster resource instead
 ### there are many attributes different for aurora and mysql, for example engine_version, instance_class, storage_type, etc.
-resource "aws_db_instance" "poneglyph1-rds" {
+## Separate cluster instance (required for Aurora)
+## aws_rds_cluster_instance is used to create an instance in the cluster,
+## while aws_rds_cluster is used to create the cluster itself. 
+##The cluster instance is associated with the cluster and inherits its settings, such as engine version and backup configuration.
+
+resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
   count = var.create_rds ? 1 : 0
 
   ##Engine and version
@@ -18,12 +23,16 @@ resource "aws_db_instance" "poneglyph1-rds" {
   engine_version = "8.4.8"
 
   ##Instance configuration
-  instance_class          = "db.t3.micro"
-  allocated_storage       = 20
-  storage_type            = "gp2"
+  identifier        = "database-1"
+  instance_class    = "db.t3.micro"
+  allocated_storage = 20
+  storage_type      = "gp2"
+
+  ##Backup
   backup_retention_period = 7
   skip_final_snapshot     = true
   multi_az                = false
+
 
 
   ##Credentials
@@ -37,4 +46,7 @@ resource "aws_db_instance" "poneglyph1-rds" {
   publicly_accessible    = false
   port                   = 3306
 
+
 }
+
+
