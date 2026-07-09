@@ -1,6 +1,5 @@
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name   = "poneglyph1-rds-subnet-group"
-  vpc_id = aws_vpc.poneglyph1-vpc.id
+  name = "poneglyph1-rds-subnet-group"
   subnet_ids = [
     aws_subnet.private-subnet-rds1.id,
     aws_subnet.private-subnet-rds2.id
