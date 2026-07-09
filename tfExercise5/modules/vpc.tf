@@ -90,10 +90,18 @@ resource "aws_subnet" "private-subnet-rds2" {
 #Elatic IP for NAT Gateway #####################################################################
 resource "aws_eip" "poneglyph1-nat-eip1" {
   domain = "vpc"
+
+  tags = {
+    Name = "poneglyph1-nat-eip1"
+  }
 }
 
 resource "aws_eip" "poneglyph1-nat-eip2" {
   domain = "vpc"
+
+  tags = {
+    Name = "poneglyph1-nat-eip2"
+  }
 }
 
 #Nat Gateway #####################################################################
@@ -137,6 +145,9 @@ resource "aws_route_table" "poneglyph1-public-rt" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.poneglyph1-igw.id
   }
+  tags = {
+    Name = "poneglyph1-public-rt"
+  }
 }
 
 resource "aws_route_table" "poneglyph1-private-rt-az1" {
@@ -145,6 +156,9 @@ resource "aws_route_table" "poneglyph1-private-rt-az1" {
     ##Route all outbound traffic to the NAT Gateway
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-1.id
+  }
+  tags = {
+    Name = "poneglyph1-private-rt-az1"
   }
 }
 
@@ -155,6 +169,9 @@ resource "aws_route_table" "poneglyph1-private-rt-az2" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-2.id
   }
+  tags = {
+    Name = "poneglyph1-private-rt-az2"
+  }
 }
 
 resource "aws_route_table" "poneglyph1-private-rt-rds-az1" {
@@ -164,6 +181,9 @@ resource "aws_route_table" "poneglyph1-private-rt-rds-az1" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-1.id
   }
+  tags = {
+    Name = "poneglyph1-private-rt-rds-az1"
+  }
 }
 
 resource "aws_route_table" "poneglyph1-private-rt-rds-az2" {
@@ -172,6 +192,9 @@ resource "aws_route_table" "poneglyph1-private-rt-rds-az2" {
     ##Route all outbound traffic to the NAT Gateway
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-2.id
+  }
+  tags = {
+    Name = "poneglyph1-private-rt-rds-az2"
   }
 }
 

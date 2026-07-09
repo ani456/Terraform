@@ -1,4 +1,4 @@
-##Variables:
+## Variables:
 
     variables.tf
               Defines what variables exist, their types, descriptions, and optional defaults.
@@ -13,7 +13,8 @@ Provides values for those variables.
 instance_type = "t3.small"
 environment = "dev"
 
-##Workspace:
+## Workspace:
+
 command - terraform workspace new <workspace name>
 
 #################### for different tfvars file for each workspace
@@ -41,18 +42,35 @@ File Purpose Syntax
 variables.tf Declare variables variable "name" { ... }
 terraform.tfvars Set variable valuesname = "value"
 
-####### Referencing values from another module ✅ Output required ###########
+###### Referencing values from another module ✅ Output required
 
-If you just added a new module block (like your rds case), terraform init will only add/update entries for any new providers that module requires. Existing provider entries stay untouched.
+-If you just added a new module block (like your rds case), terraform init will only add/update entries for any new providers that module requires. Existing provider entries stay untouched.
 
-####### Getting the same endpoint for every rds instance ############
+#### Getting the same endpoint for every rds instance
 
-An RDS endpoint looks like:
+-An RDS endpoint looks like:
 <db-instance-identifier>.<random-suffix>.<region>.rds.amazonaws.com
 
-The <random-suffix> part (e.g. abcdefghijkl) is a unique identifier generated internally by RDS for a specific combination of AWS Region and AWS account, and it doesn't change for that Region/account combination — meaning all your DB instances in that Region share the same fixed identifier.
+-The <random-suffix> part (e.g. abcdefghijkl) is a unique identifier generated internally by RDS for a specific combination of AWS Region and AWS account, and it doesn't change for that Region/account combination — meaning all your DB instances in that Region share the same fixed identifier.
 
 - Your app configs / connection strings don't need to change between recreations.
 - It only changes if you change the DB instance identifier or deploy to a different region.
 
-#########
+#########Terraform plan
+
+# dev(workspace)
+
+terraform plan -var-file="terraform.tfstate.d/dev/terraform.tfvars" -out=plan1.out
+
+- -var-file is requried as the terraform.tfvars is not located at the root directory
+  -runs terraform plan command and stores the plan in plan1.out file which can be used to only provision the infrastructure specified in the plan1.out file.
+
+-Thus continue to add new configuration while having a snapshot of the old configuration
+
+## Benefits of terraform plan to file
+
+-What you reviewed is exactly what gets applied
+-No risk of infrastructure changing between plan and apply
+-Without the file, running plan then apply separately could produce different results if someone else made changes in between.
+
+- After plan with -var-file , no need to provide in apply again.

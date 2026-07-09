@@ -1,3 +1,5 @@
+# terraform block, backend, required providers
+
 terraform {
   required_providers {
     aws = {
