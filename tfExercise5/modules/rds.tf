@@ -28,7 +28,7 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
   storage_type      = "gp2"
 
   ##Backup
-  backup_retention_period = 7
+  backup_retention_period = 0
   skip_final_snapshot     = true
   multi_az                = false
 
