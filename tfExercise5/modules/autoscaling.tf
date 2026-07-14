@@ -45,13 +45,33 @@ resource "aws_autoscaling_group" "poneglyph1-asg" {
     id      = aws_launch_template.poneglyph1-lt.id
     version = "$Latest"
   }
-  vpc_zone_identifier = [aws_subnet.private-subnet-instance1, aws_subnet.private-subnet-instance2]
-  min_size            = 1
-  max_size            = 3
-  desired_capacity    = 2
+  vpc_zone_identifier = [
+    aws_subnet.private-subnet-instance1,
+    aws_subnet.private-subnet-instance2
+  ]
+  min_size         = 1
+  max_size         = 3
+  desired_capacity = 2
 
-  availability_zone_distribution {
+  target_group_arns = [aws_lb_target_group.poneglyph1-tg.arn]
 
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
+
+  ## "EC2" (default if you don't set it)
+  ## The ASG only checks the EC2 instance's own status checks — basically "is the VM running and responding at the hypervisor/OS level."
+  ## As long as the instance is powered on and passing basic system checks, the ASG considers it healthy — even if your application inside it has crashed or is returning 500 errors.
+  ## "ELB" (what I set)
+  ## The ASG also checks the load balancer's target group health checks — the same health check your ALB/NLB uses to decide whether to route traffic to that instance (e.g. hitting /health and expecting a 200). 
+  ## If your app is unresponsive, hung, or failing its health check endpoint — even though the EC2 instance itself is technically "running" — the ASG will mark it unhealthy and terminate + replace it.
+  default_cooldown = 300
+
+  tag {
+    key                 = "Name"
+    value               = "poneglyph1-asg-instance"
+    propagate_at_launch = true
   }
-
+  lifecycle { ##Without it (default behavior is destroy-then-create)
+    create_before_destroy = true
+  }
 }
