@@ -74,9 +74,9 @@ resource "aws_security_group" "rds-sg" {
   }
 
   ingress {
-    description     = "Allow ssh form jumpserver"
-    from_port       = 22
-    to_port         = 22
+    description     = "Allow mysql traffic from jumpserver"
+    from_port       = 3306
+    to_port         = 3306
     protocol        = "tcp"
     security_groups = [aws_security_group.jumpserver-sg.id]
   }

@@ -74,3 +74,7 @@ terraform plan -var-file="terraform.tfstate.d/dev/terraform.tfvars" -out=plan1.o
 -Without the file, running plan then apply separately could produce different results if someone else made changes in between.
 
 - After plan with -var-file , no need to provide in apply again.
+
+#################################################################
+
+Whenever you're wiring two resources together and unsure whether to use .id, .name, or .arn, check the required argument description in the Terraform provider docs for the field you're filling in — it'll literally say "Name of the autoscaling group" or "ARN of the target group."

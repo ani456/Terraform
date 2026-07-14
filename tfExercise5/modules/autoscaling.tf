@@ -56,7 +56,7 @@ resource "aws_autoscaling_group" "poneglyph1-asg" {
   target_group_arns = [aws_lb_target_group.poneglyph1-tg.arn]
 
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 180
 
   ## "EC2" (default if you don't set it)
   ## The ASG only checks the EC2 instance's own status checks — basically "is the VM running and responding at the hypervisor/OS level."
@@ -64,7 +64,7 @@ resource "aws_autoscaling_group" "poneglyph1-asg" {
   ## "ELB" (what I set)
   ## The ASG also checks the load balancer's target group health checks — the same health check your ALB/NLB uses to decide whether to route traffic to that instance (e.g. hitting /health and expecting a 200). 
   ## If your app is unresponsive, hung, or failing its health check endpoint — even though the EC2 instance itself is technically "running" — the ASG will mark it unhealthy and terminate + replace it.
-  default_cooldown = 300
+  default_cooldown = 180
 
   tag {
     key                 = "Name"
@@ -74,4 +74,20 @@ resource "aws_autoscaling_group" "poneglyph1-asg" {
   lifecycle { ##Without it (default behavior is destroy-then-create)
     create_before_destroy = true
   }
+}
+
+resource "aws_autoscaling_policy" "poneglyph1-scale-up-policy" {
+  name                   = "poneglyph1-scale-up-policy"
+  autoscaling_group_name = aws_autoscaling_group.poneglyph1-asg.name ##asg doesn't have ID so name is the primary identifier
+  policy_type            = "TargetTrackingScaling"
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 70.0
+
+  }
+
+
 }
