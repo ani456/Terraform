@@ -2,7 +2,7 @@ data "aws_ami" "poneglyph1-ami" {
   most_recent = true
   owners      = ["self"]
   filter {
-    name   = "poneglyph-ami"
+    name   = "name" //filter name need to be valid as real API filter key
     values = ["poneglyph-ami*"]
   }
   filter {
@@ -14,17 +14,17 @@ data "aws_ami" "poneglyph1-ami" {
 data "aws_key_pair" "ssh-key" {
 
   filter {
-    name   = "Linux-key"
-    values = ["Linux-key"]
+    name   = "key-name" //filter name need to be valid as real API filter key
+    values = ["linux-key"]
   }
 
 }
 
 resource "aws_launch_template" "poneglyph1-lt" {
-  image_id             = data.aws_ami.poneglyph1-ami.id
-  instance_type        = "t3.micro"
-  security_group_names = [aws_security_group.instance-sg.name]
-  key_name             = data.aws_key_pair.ssh-key.key_name
+  image_id               = data.aws_ami.poneglyph1-ami.id
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [aws_security_group.instance-sg.id]
+  key_name               = data.aws_key_pair.ssh-key.key_name
 
   tag_specifications {
     resource_type = "instance"
@@ -46,8 +46,8 @@ resource "aws_autoscaling_group" "poneglyph1-asg" {
     version = "$Latest"
   }
   vpc_zone_identifier = [
-    aws_subnet.private-subnet-instance1,
-    aws_subnet.private-subnet-instance2
+    aws_subnet.private-subnet-instance1.id,
+    aws_subnet.private-subnet-instance2.id
   ]
   min_size         = 1
   max_size         = 3

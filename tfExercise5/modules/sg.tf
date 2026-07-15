@@ -23,9 +23,10 @@ resource "aws_security_group" "instance-sg" {
     description = "Allow loadbalancer traffice on port 5000"
     ##fro m_port and to_port are the same because we want to allow traffic on a single port, 5000
     ##these are used to define a range of ports
-    from_port = 5000
-    to_port   = 5000
-    protocol  = "tcp"
+    from_port       = 5000
+    to_port         = 5000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb-sg.id]
   }
 }
 
