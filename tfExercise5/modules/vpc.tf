@@ -16,6 +16,10 @@ resource "aws_vpc" "poneglyph1-vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
+  assign_generated_ipv6_cidr_block = true ##apt used ipv6 address space for the VPC, which allows instances to have IPv6 addresses in addition to their IPv4 addresses.
+  ## This is useful for applications that require global reachability or need to communicate with IPv6-only clients.
+
+
   tags = {
     Name = "poneglyph1-vpc"
   }
@@ -26,10 +30,12 @@ resource "aws_vpc" "poneglyph1-vpc" {
 
 #public subnets for load balancer, NAT gateway, and bastion host#######################
 resource "aws_subnet" "public-subnet1" {
-  vpc_id                  = aws_vpc.poneglyph1-vpc.id
-  cidr_block              = "10.1.1.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "us-east-2a"
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.1.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 1)
+  assign_ipv6_address_on_creation = true
+  map_public_ip_on_launch         = true
+  availability_zone               = "us-east-2a"
 
   tags = {
     Name = "public-subnet1"
@@ -38,10 +44,12 @@ resource "aws_subnet" "public-subnet1" {
 }
 
 resource "aws_subnet" "public-subnet2" {
-  vpc_id                  = aws_vpc.poneglyph1-vpc.id
-  cidr_block              = "10.1.3.0/24"
-  availability_zone       = "us-east-2b"
-  map_public_ip_on_launch = true
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.3.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 3)
+  assign_ipv6_address_on_creation = true
+  availability_zone               = "us-east-2b"
+  map_public_ip_on_launch         = true
 
   tags = {
     Name = "public-subnet2"
@@ -51,9 +59,11 @@ resource "aws_subnet" "public-subnet2" {
 
 #private subnets for instances and RDS############################################
 resource "aws_subnet" "private-subnet-instance1" {
-  vpc_id            = aws_vpc.poneglyph1-vpc.id
-  cidr_block        = "10.1.4.0/24"
-  availability_zone = "us-east-2a"
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.4.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 5)
+  assign_ipv6_address_on_creation = true
+  availability_zone               = "us-east-2a"
 
   tags = {
     Name = "private-subnet-instance1"
@@ -69,9 +79,11 @@ resource "aws_subnet" "private-subnet-instance2" {
   }
 }
 resource "aws_subnet" "private-subnet-rds1" {
-  vpc_id            = aws_vpc.poneglyph1-vpc.id
-  cidr_block        = "10.1.6.0/24"
-  availability_zone = "us-east-2a"
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.6.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 7)
+  assign_ipv6_address_on_creation = true
+  availability_zone               = "us-east-2a"
 
   tags = {
     Name = "private-subnet-rds1"
@@ -143,6 +155,7 @@ resource "aws_route_table" "poneglyph1-public-rt" {
   route {
     ##Route all outbound traffic to the Internet Gateway
     cidr_block = "0.0.0.0/0"
+
     gateway_id = aws_internet_gateway.poneglyph1-igw.id
   }
   tags = {
