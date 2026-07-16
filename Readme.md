@@ -84,3 +84,14 @@ Whenever you're wiring two resources together and unsure whether to use .id, .na
 - NAT Gateways only support IPv4. There's no such thing as an "IPv6 NAT Gateway" in AWS
 - So we need an egress only internet gateway for ipv6
 - allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances.
+
+### if want to rename terraform.tfstate.d
+
+- Option 1 — Just leave it as terraform.tfstate.d. This is standard convention; every Terraform project using workspaces has this exact folder name. There's no real downside to keeping it as-is.
+- Option 2 — If you truly want custom-named per-environment state files, don't use Terraform workspaces at all. Instead, use separate state files via -state flag or backend config per environment, with your own folder structure:
+
+environments/
+dev/
+terraform.tfstate
+prod/
+terraform.tfstate
