@@ -3,6 +3,10 @@ resource "aws_security_group" "instance-sg" {
   vpc_id = aws_vpc.poneglyph1-vpc.id
   name   = "instance-sg"
 
+
+  ##use ipv6_cidr_blocks to allow ipv6 traffic
+  ##use cidr_blocks to allow ipv4 traffic
+
   ingress {
     description     = "Allow HTTP traffic from ALB"
     from_port       = 80
@@ -28,6 +32,22 @@ resource "aws_security_group" "instance-sg" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb-sg.id]
   }
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
 }
 
 
@@ -37,27 +57,50 @@ resource "aws_security_group" "alb-sg" {
   name   = "alb-sg"
 
   ingress {
-    description = "Allow HTTP traffic from anywhere"
+    description = "Allow HTTP traffic from anywhere ipv4"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    description = "Allow HTTPS traffic from anywhere"
+    description = "Allow HTTPS traffic from anywhere ipv4"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
 
   }
+  ingress {
+    description      = "Allow ipv6 traffic from anywhere ipv6"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Allow HTTPS traffic from anywhere ipv6"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
 
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow all outbound traffic ipv4"
     from_port   = 0
     to_port     = 0
     protocol    = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
-    cidr_blocks = ["10.1.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    description      = "Allow all outbound traffic ipv6"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
+    ipv6_cidr_blocks = ["::/0"]
   }
 }
 
@@ -83,11 +126,11 @@ resource "aws_security_group" "rds-sg" {
   }
 
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow all outbound traffic ipv4"
     from_port   = 0
     to_port     = 0
     protocol    = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
-    cidr_blocks = ["10.1.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -107,10 +150,18 @@ resource "aws_security_group" "jumpserver-sg" {
   }
 
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow all outbound traffic ipv4"
     from_port   = 0
     to_port     = 0
     protocol    = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
-    cidr_blocks = ["10.1.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow all outbound traffic ipv6"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1" ##when protocol is -1, aws ignores the port range i.e all ports and allows all traffic
+    ipv6_cidr_blocks = ["::/0"]
   }
 }

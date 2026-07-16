@@ -32,7 +32,7 @@ resource "aws_vpc" "poneglyph1-vpc" {
 resource "aws_subnet" "public-subnet1" {
   vpc_id                          = aws_vpc.poneglyph1-vpc.id
   cidr_block                      = "10.1.1.0/24"
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 1)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 1) //basecidr, how much smaller to make the sunbnet, which specific subnet number to create
   assign_ipv6_address_on_creation = true
   map_public_ip_on_launch         = true
   availability_zone               = "us-east-2a"
@@ -46,7 +46,7 @@ resource "aws_subnet" "public-subnet1" {
 resource "aws_subnet" "public-subnet2" {
   vpc_id                          = aws_vpc.poneglyph1-vpc.id
   cidr_block                      = "10.1.3.0/24"
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 3)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 2)
   assign_ipv6_address_on_creation = true
   availability_zone               = "us-east-2b"
   map_public_ip_on_launch         = true
@@ -61,7 +61,7 @@ resource "aws_subnet" "public-subnet2" {
 resource "aws_subnet" "private-subnet-instance1" {
   vpc_id                          = aws_vpc.poneglyph1-vpc.id
   cidr_block                      = "10.1.4.0/24"
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 5)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 3)
   assign_ipv6_address_on_creation = true
   availability_zone               = "us-east-2a"
 
@@ -70,9 +70,11 @@ resource "aws_subnet" "private-subnet-instance1" {
   }
 }
 resource "aws_subnet" "private-subnet-instance2" {
-  vpc_id            = aws_vpc.poneglyph1-vpc.id
-  cidr_block        = "10.1.5.0/24"
-  availability_zone = "us-east-2b"
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.5.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 4)
+  assign_ipv6_address_on_creation = true
+  availability_zone               = "us-east-2b"
 
   tags = {
     Name = "private-subnet-instance2"
@@ -81,7 +83,7 @@ resource "aws_subnet" "private-subnet-instance2" {
 resource "aws_subnet" "private-subnet-rds1" {
   vpc_id                          = aws_vpc.poneglyph1-vpc.id
   cidr_block                      = "10.1.6.0/24"
-  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 7)
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 5)
   assign_ipv6_address_on_creation = true
   availability_zone               = "us-east-2a"
 
@@ -90,9 +92,11 @@ resource "aws_subnet" "private-subnet-rds1" {
   }
 }
 resource "aws_subnet" "private-subnet-rds2" {
-  vpc_id            = aws_vpc.poneglyph1-vpc.id
-  cidr_block        = "10.1.7.0/24"
-  availability_zone = "us-east-2b"
+  vpc_id                          = aws_vpc.poneglyph1-vpc.id
+  cidr_block                      = "10.1.7.0/24"
+  ipv6_cidr_block                 = cidrsubnet(aws_vpc.poneglyph1-vpc.ipv6_cidr_block, 8, 6)
+  assign_ipv6_address_on_creation = true
+  availability_zone               = "us-east-2b"
 
   tags = {
     Name = "private-subnet-rds2"
@@ -149,12 +153,26 @@ resource "aws_internet_gateway" "poneglyph1-igw" {
   }
 }
 
+resource "aws_egress_only_internet_gateway" "poneglyph1-eigw" {
+  vpc_id = aws_vpc.poneglyph1-vpc.id
+
+  tags = {
+    Name = "poneglyph1-eigw"
+  }
+}
+
 #Route Tables #####################################################################
 resource "aws_route_table" "poneglyph1-public-rt" {
   vpc_id = aws_vpc.poneglyph1-vpc.id
   route {
-    ##Route all outbound traffic to the Internet Gateway
+    ##Route all outbound ipv4 traffic to the Internet Gateway
     cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.poneglyph1-igw.id
+
+  }
+  route {
+    ##Route all outbound ipv6 traffic to the Internet Gateway
+    ipv6_cidr_block = "::/0"
 
     gateway_id = aws_internet_gateway.poneglyph1-igw.id
   }
@@ -170,6 +188,11 @@ resource "aws_route_table" "poneglyph1-private-rt-az1" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-1.id
   }
+
+  route {
+    ipv6_cidr_block        = "::/0"
+    egress_only_gateway_id = aws_egress_only_internet_gateway.poneglyph1-eigw.id
+  }
   tags = {
     Name = "poneglyph1-private-rt-az1"
   }
@@ -182,34 +205,39 @@ resource "aws_route_table" "poneglyph1-private-rt-az2" {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-2.id
   }
+
+  route {
+    ipv6_cidr_block        = "::/0"
+    egress_only_gateway_id = aws_egress_only_internet_gateway.poneglyph1-eigw.id
+  }
   tags = {
     Name = "poneglyph1-private-rt-az2"
   }
 }
 
-resource "aws_route_table" "poneglyph1-private-rt-rds-az1" {
-  vpc_id = aws_vpc.poneglyph1-vpc.id
-  route {
-    ##Route all outbound traffic to the NAT Gateway
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-1.id
-  }
-  tags = {
-    Name = "poneglyph1-private-rt-rds-az1"
-  }
-}
+# resource "aws_route_table" "poneglyph1-private-rt-rds-az1" {
+#   vpc_id = aws_vpc.poneglyph1-vpc.id
+#   route {
+#     ##Route all outbound traffic to the NAT Gateway
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-1.id
+#   }
+#   tags = {
+#     Name = "poneglyph1-private-rt-rds-az1"
+#   }
+# }
 
-resource "aws_route_table" "poneglyph1-private-rt-rds-az2" {
-  vpc_id = aws_vpc.poneglyph1-vpc.id
-  route {
-    ##Route all outbound traffic to the NAT Gateway
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-2.id
-  }
-  tags = {
-    Name = "poneglyph1-private-rt-rds-az2"
-  }
-}
+# resource "aws_route_table" "poneglyph1-private-rt-rds-az2" {
+#   vpc_id = aws_vpc.poneglyph1-vpc.id
+#   route {
+#     ##Route all outbound traffic to the NAT Gateway
+#     cidr_block     = "0.0.0.0/0"
+#     nat_gateway_id = aws_nat_gateway.poneglyph1-nat-gateway-2.id
+#   }
+#   tags = {
+#     Name = "poneglyph1-private-rt-rds-az2"
+#   }
+# }
 
 
 #Route Table Associations #####################################################################
@@ -231,14 +259,14 @@ resource "aws_route_table_association" "private-subnet-instance2-association" {
   route_table_id = aws_route_table.poneglyph1-private-rt-az2.id
 }
 
-resource "aws_route_table_association" "private-subnet-rds1-association" {
-  subnet_id      = aws_subnet.private-subnet-rds1.id
-  route_table_id = aws_route_table.poneglyph1-private-rt-rds-az1.id
-}
-resource "aws_route_table_association" "private-subnet-rds2-association" {
-  subnet_id      = aws_subnet.private-subnet-rds2.id
-  route_table_id = aws_route_table.poneglyph1-private-rt-rds-az2.id
-}
+# resource "aws_route_table_association" "private-subnet-rds1-association" {
+#   subnet_id      = aws_subnet.private-subnet-rds1.id
+#   route_table_id = aws_route_table.poneglyph1-private-rt-rds-az1.id
+# }
+# resource "aws_route_table_association" "private-subnet-rds2-association" {
+#   subnet_id      = aws_subnet.private-subnet-rds2.id
+#   route_table_id = aws_route_table.poneglyph1-private-rt-rds-az2.id
+# }
 
 
 #

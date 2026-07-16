@@ -78,3 +78,9 @@ terraform plan -var-file="terraform.tfstate.d/dev/terraform.tfvars" -out=plan1.o
 #################################################################
 
 Whenever you're wiring two resources together and unsure whether to use .id, .name, or .arn, check the required argument description in the Terraform provider docs for the field you're filling in — it'll literally say "Name of the autoscaling group" or "ARN of the target group."
+
+###Egress-only internet Gateway #############################
+
+- NAT Gateways only support IPv4. There's no such thing as an "IPv6 NAT Gateway" in AWS
+- So we need an egress only internet gateway for ipv6
+- allows outbound communication over IPv6 from instances in your VPC to the internet, and prevents the internet from initiating an IPv6 connection with your instances.
