@@ -35,7 +35,7 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
 
 
   ##Credentials
-  db_name  = "poneglyph1db"
+  db_name  = "test_db"
   username = var.db_username
   password = var.db_password
 
