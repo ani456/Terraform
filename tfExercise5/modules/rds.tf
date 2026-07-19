@@ -28,9 +28,9 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
   storage_type      = "gp2"
 
   ##Backup
-  backup_retention_period = 0
+  backup_retention_period = 0 //for multi-az deployment, this should be >0
   skip_final_snapshot     = true
-  multi_az                = false
+  multi_az                = false //make this true for standby replica in another az
 
 
 
@@ -66,3 +66,29 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
 #   }
 # }
 
+
+
+resource "aws_db_instance" "poneglyph1-rds-replica" {
+  count = var.create_rds ? 1 : 0
+
+  identifier          = "database-1-replica"
+  replicate_source_db = aws_db_instance.poneglyph1-rds[0].identifier
+
+  instance_class = "db.t3.micro"
+  storage_type   = "gp2"
+
+  ## Do NOT set engine, engine_version, db_name, username, password, allocated_storage —
+  ## these are inherited from the source instance.
+
+  publicly_accessible    = false
+  vpc_security_group_ids = [aws_security_group.rds-sg.id]
+
+  ## If replica is in the SAME region, you don't need db_subnet_group_name
+  ## (it inherits the source's VPC). Only set it if replicating cross-region
+  ## or cross-VPC.
+
+  skip_final_snapshot = true
+
+  ## Replicas can optionally have their own Multi-AZ standby too
+  multi_az = false
+}
