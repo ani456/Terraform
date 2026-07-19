@@ -9,3 +9,13 @@ module "rds-alb-sg-vpc" {
   db_username = var.db_username
   db_password = var.db_password
 }
+
+module "jumpserver" {
+  source = "./modules/jumpserver"
+
+  instance_type        = var.instance_type
+  instance_name        = var.instance_name
+  key_name             = var.key_name
+  jumpserver_sg_id     = var.jumpserver_sg_id
+  jumpserver_subnet_id = var.jumpserver_subnet_id
+}

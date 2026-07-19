@@ -1,3 +1,7 @@
+Latest changes in this repositoy are going in tfExercise5
+
+Consisting of the Multitier Aws architecture setup with Terraform
+
 ## Variables:
 
     variables.tf
