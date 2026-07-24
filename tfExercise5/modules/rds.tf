@@ -25,10 +25,10 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
   identifier        = "database-1"
   instance_class    = "db.t3.micro"
   allocated_storage = 20
-  storage_type      = "gp2"
+  storage_type      = "gp3"
 
   ##Backup
-  backup_retention_period = 0 //for multi-az deployment, this should be >0
+  backup_retention_period = 1 //for multi-az deployment, this should be >0
   skip_final_snapshot     = true
   multi_az                = false //make this true for standby replica in another az
 
@@ -45,7 +45,10 @@ resource "aws_db_instance" "poneglyph1-rds" { ###aws_rds_cluster for aurora
   publicly_accessible    = false
   port                   = 3306
 
-
+  tags = {
+    Name    = "poneglyph1-rds"
+    Project = "poneglyph1"
+  }
 }
 
 ##parameter group is optional if you want to customize the database parameters,

@@ -16,6 +16,7 @@ variable "db_password" {
   description = "The password for the database"
   type        = string
   default     = "thisisrootpassword"
+  sensitive   = true
 }
 
 variable "instance_type" {

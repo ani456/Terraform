@@ -100,4 +100,6 @@ terraform.tfstate
 prod/
 terraform.tfstate
 
+## Outpub block is required when you want to pass the value of one moudles to another.
+
 #### Remote Backend

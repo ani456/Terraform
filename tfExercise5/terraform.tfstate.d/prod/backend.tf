@@ -5,5 +5,6 @@ terraform {
     region         = "us-east-2"
     dynamodb_table = "poneglyph-lock"
     encrypt        = true
+    use_lockfile   = true
   }
 }
